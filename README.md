@@ -142,6 +142,42 @@ LLM keys, STT keys, and MongoDB live in Big Ears — not in RIO.
 
 ---
 
+## Demo deploy (Vercel + ngrok)
+
+RIO on **Vercel**, Big Ears on your laptop exposed via **ngrok** (keeps GIVA VPN → LiteLLM working).
+
+**Terminal 1 — Big Ears** (VPN on for `litellm.internal.givadiva.co`):
+
+```bash
+cd big-ears && npm run dev
+```
+
+**Terminal 2 — ngrok**:
+
+```bash
+cd big-ears && bash scripts/ngrok-tunnel.sh
+# copy the https://….ngrok-free.app URL
+```
+
+**Terminal 3 — Vercel**:
+
+```bash
+cd rio
+export BIG_EARS_NGROK_URL=https://YOUR-ID.ngrok-free.app
+export BIG_EARS_API_KEY=dev-local-key          # same as big-ears API_KEY
+# optional — for /ingest uploads:
+export SUPABASE_URL=… SUPABASE_SERVICE_ROLE_KEY=… SUPABASE_STORAGE_BUCKET=bigears-recordings
+export RECORDINGS_STORAGE=supabase
+npx vercel login    # once
+bash scripts/deploy-vercel.sh
+```
+
+RIO server calls Big Ears through ngrok; the `ngrok-skip-browser-warning` header is added automatically in `lib/api.ts`.
+
+**While demoing:** keep Big Ears and ngrok running. Free ngrok URLs change on restart — re-run `deploy-vercel.sh` with the new URL.
+
+---
+
 ## Scripts
 
 | Command | Purpose |

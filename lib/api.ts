@@ -55,6 +55,15 @@ export type SalesMetricKey = keyof SalesMetrics['series'];
 const BASE = process.env.BIG_EARS_API_URL ?? process.env.BIGEARS_API_URL ?? 'http://localhost:8080';
 const KEY = process.env.BIG_EARS_API_KEY ?? process.env.BIGEARS_API_KEY ?? '';
 
+/** ngrok free tier serves an interstitial unless this header is set. */
+function beHeaders(extra?: Record<string, string>): Record<string, string> {
+  return {
+    'x-api-key': KEY,
+    ...(BASE.includes('ngrok') ? { 'ngrok-skip-browser-warning': '1' } : {}),
+    ...extra,
+  };
+}
+
 export class ApiError extends Error {
   constructor(readonly status: number, message: string) {
     super(message);
@@ -74,10 +83,7 @@ function url(path: string, query?: Query): string {
 async function request<T>(path: string, opts: { query?: Query; method?: string; body?: unknown } = {}): Promise<T> {
   const res = await fetch(url(path, opts.query), {
     method: opts.method ?? 'GET',
-    headers: {
-      'x-api-key': KEY,
-      ...(opts.body ? { 'content-type': 'application/json' } : {}),
-    },
+    headers: beHeaders(opts.body ? { 'content-type': 'application/json' } : undefined),
     body: opts.body ? JSON.stringify(opts.body) : undefined,
     // Dashboards read live data; a cached visit list is a wrong visit list.
     cache: 'no-store',
@@ -210,7 +216,7 @@ export const exportUrl = (opts: { store?: string; range?: Range }) => url('/expo
 
 export async function isBackendUp(): Promise<boolean> {
   try {
-    const res = await fetch(new URL('/ready', BASE), { cache: 'no-store' });
+    const res = await fetch(new URL('/ready', BASE), { cache: 'no-store', headers: beHeaders() });
     return res.ok;
   } catch {
     return false;
