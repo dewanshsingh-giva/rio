@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import RioLogo from '@/components/rio-logo';
 
 const GROUPS = [
   { label: 'Analyse', items: [
@@ -27,13 +28,8 @@ export default function Nav() {
   const path = usePathname();
   return (
     <aside className="w-[232px] flex-none bg-ink text-stone-200 px-3.5 py-5 flex flex-col gap-1 sticky top-0 h-screen overflow-y-auto">
-      <Link href="/" className="flex items-center gap-2.5 px-2 pb-4">
-        <span className="h-[26px] px-1.5 rounded-[7px] grid place-items-center text-[11px] font-extrabold tracking-tight text-white"
-          style={{ background: 'linear-gradient(135deg,#D99A2B,#B4780C)' }}>RIO</span>
-        <span>
-          <b className="text-sm tracking-tight block">Retail Intelligence OS</b>
-          <small className="text-stone-400 text-[11px]">Big Ears</small>
-        </span>
+      <Link href="/" className="flex items-center gap-2.5 px-2 pb-4 no-underline">
+        <RioLogo variant="dark" size={28} subtitle="Big Ears" />
       </Link>
 
       {GROUPS.map((g) => (

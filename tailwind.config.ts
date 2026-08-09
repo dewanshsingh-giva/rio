@@ -5,7 +5,9 @@ export default {
     extend: {
       colors: {
         ink: '#1D1B18', muted: '#767268', line: '#E7E3D9', paper: '#F9F8F5', card: '#FFFFFF',
-        accent: '#B4780C', 'accent-soft': '#FBF0DC', 'accent-line': '#E3B65C',
+        cream: '#FFF5F0',
+        accent: '#B4780C', 'accent-light': '#D99A2B', 'accent-soft': '#FBF0DC', 'accent-line': '#E3B65C',
+        signal: '#0F766E', 'signal-soft': '#E6F4F1',
         good: '#146B4B', 'good-soft': '#E7F3EC',
         warn: '#B4780C', 'warn-soft': '#FBF0DC',
         bad: '#A82142', 'bad-soft': '#F8E4E8',

@@ -1,6 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import RioLogo, { RIO_BRAND } from '@/components/rio-logo';
+import WordFrequencyCloud from '@/components/word-frequency-cloud';
+import BigEarsPipeline from '@/components/big-ears-pipeline';
+import RioSurface, { RioSurfaceHeader } from '@/components/rio-surface';
 
 const FEATURES = [
   { icon: '◎', title: 'Evidence, not vibes', desc: 'Each observation ships with a verbatim quote and confidence. Unclear audio is flagged — never scored as a miss.' },
@@ -8,7 +12,7 @@ const FEATURES = [
   { icon: '◇', title: 'Demand you never heard', desc: 'Unfulfilled customer requests surface to merchandising — not just associate performance.' },
   { icon: '⟳', title: 'Follow-ups that matter', desc: 'High-intent visitors who left without buying land on tomorrow\'s call list with context attached.' },
   { icon: '⏺', title: 'Capture anywhere', desc: 'Record live from a tablet, upload a file, or paste a transcript — same pipeline either way.' },
-  { icon: '✦', title: 'Manager copilot', desc: 'Ask questions across store data in plain language. Answers grounded in analysed visits only.' },
+  { icon: '✦', title: 'RIO copilot', desc: 'Ask questions across store data in plain language. Answers grounded in analysed visits only.' },
 ];
 
 const STEPS = [
@@ -18,13 +22,33 @@ const STEPS = [
   { n: '04', t: 'Act', d: 'RIO surfaces scores, transcript flags, coaching scripts, and follow-ups — ready for the floor.' },
 ];
 
+/** Illustrative demand terms for the intro page — live data lives on /customers. */
+const DEMO_DEMAND_WORDS = [
+  { term: 'silver quality', count: 48 },
+  { term: 'gift wrap', count: 41 },
+  { term: 'return policy', count: 36 },
+  { term: 'ear piercing', count: 31 },
+  { term: 'matching set', count: 28 },
+  { term: 'oxidised', count: 24 },
+  { term: 'anniversary', count: 22 },
+  { term: 'hallmark', count: 19 },
+  { term: 'custom engraving', count: 17 },
+  { term: 'size exchange', count: 15 },
+  { term: 'bridal', count: 14 },
+  { term: 'anti-tarnish', count: 12 },
+  { term: 'EMI', count: 11 },
+  { term: 'rose gold', count: 10 },
+  { term: 'couple band', count: 9 },
+  { term: 'necklace length', count: 8 },
+];
+
 function Waveform() {
   return (
     <div className="flex items-center justify-center gap-[3px] h-8 flex-1 min-w-0" aria-hidden>
       {[10, 18, 26, 14, 30, 22, 34, 16, 28, 20, 32, 12, 24, 18, 28, 10, 22, 16, 26, 14].map((h, i) => (
         <span
           key={i}
-          className="block w-[3px] rounded-full bg-gradient-to-b from-[#D99A2B] to-[#B4780C] origin-bottom animate-wave-bar"
+          className="block w-[3px] rounded-full bg-gradient-to-b from-[#2DD4A8] to-[#146B4B] origin-bottom animate-wave-bar"
           style={{ height: h, animationDelay: `${(i * 0.08) % 0.35}s` }}
         />
       ))}
@@ -35,19 +59,10 @@ function Waveform() {
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white text-ink">
-      <div className="bg-ink text-stone-300 text-[11.5px] py-2 px-6 text-center">
-        PII redacted before storage · Consent per visit · Built for DPDP 2023 · Hinglish-first transcription
-      </div>
-
       <header className="sticky top-0 z-50 bg-white/92 backdrop-blur-md border-b border-line">
         <div className="max-w-[1120px] mx-auto px-6 h-16 flex items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-2.5">
-            <span className="w-[34px] h-[34px] rounded-[9px] grid place-items-center text-xs font-extrabold text-white"
-              style={{ background: 'linear-gradient(135deg,#D99A2B,#B4780C)' }}>RIO</span>
-            <span>
-              <b className="block text-sm tracking-tight">Retail Intelligence OS</b>
-              <small className="text-[11px] text-muted">Powered by Big Ears</small>
-            </span>
+          <Link href="/" className="no-underline text-inherit">
+            <RioLogo variant="light" subtitle="Powered by Big Ears" />
           </Link>
           <nav className="hidden md:flex items-center gap-7 text-[13px] text-muted">
             <a href="#product" className="hover:text-ink">Product</a>
@@ -55,31 +70,32 @@ export default function LandingPage() {
             <a href="#how" className="hover:text-ink">How it works</a>
             <a href="#platform" className="hover:text-ink">Platform</a>
           </nav>
-          <Link href="/dashboard" className="bg-ink text-white text-[13px] font-semibold px-4 py-2.5 rounded-[9px] hover:bg-stone-700">
+          <Link href="/dashboard" className="bg-good text-white text-[13px] font-semibold px-4 py-2.5 rounded-[9px] hover:bg-[#0f5c41]">
             Open dashboard
           </Link>
         </div>
       </header>
 
-      {/* Hero */}
+      {/* Hero — Convoking-style outcome headline */}
       <section className="max-w-[1120px] mx-auto px-6 py-14 pb-[72px] grid lg:grid-cols-2 gap-12 items-center">
         <div>
-          <div className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-accent bg-accent-soft border border-accent-line rounded-full px-3 py-1.5 mb-5">
-            Retail Intelligence System
+          <div className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-signal bg-signal-soft border border-[#b8ddd4] rounded-full px-3 py-1.5 mb-5">
+            Conversation intelligence for retail
           </div>
           <h1 className="font-serif text-[clamp(36px,5vw,52px)] leading-[1.08] tracking-tight font-bold">
-            Every floor conversation,<br />turned into action.
+            Every floor conversation<br />
+            <span className="text-good">turned into intelligence.</span>
           </h1>
-          <p className="mt-[18px] text-[17px] text-stone-600 max-w-[480px] leading-relaxed">
-            RIO is the manager-facing layer of the Retail Intelligence System.
-            Capture visits, audit evidence line by line, coach associates, and
-            recover revenue you didn&apos;t know you were losing.
+          <p className="mt-[18px] text-[17px] text-stone-600 max-w-[500px] leading-relaxed">
+            RIO helps retail leaders understand, measure, and elevate the voice of their
+            sales floor — unlocking what customers wanted, how associates performed, and
+            which conversations hid revenue you never counted.
           </p>
           <div className="mt-7 flex flex-wrap gap-2.5">
-            <Link href="/visits" className="bg-ink text-white text-[13px] font-semibold px-[18px] py-2.5 rounded-[9px] hover:bg-stone-700">
+            <Link href="/visits" className="bg-good text-white text-[13px] font-semibold px-[18px] py-2.5 rounded-[9px] hover:bg-[#0f5c41]">
               See a live visit
             </Link>
-            <Link href="/ingest" className="border border-line text-[13px] font-semibold px-[18px] py-2.5 rounded-[9px] hover:border-stone-400">
+            <Link href="/ingest" className="border border-good/30 text-good text-[13px] font-semibold px-[18px] py-2.5 rounded-[9px] hover:bg-good-soft">
               Record a conversation
             </Link>
           </div>
@@ -103,17 +119,18 @@ export default function LandingPage() {
         <div className="relative">
           <div className="absolute -top-5 -inset-x-3 h-[120px] pointer-events-none opacity-55" aria-hidden>
             <svg viewBox="0 0 400 80" preserveAspectRatio="none" className="w-full h-full" fill="none">
-              <path d="M0 40 Q50 10 100 40 T200 40 T300 40 T400 40" stroke="#B4780C" strokeWidth="2" opacity=".25" />
-              <path d="M0 48 Q50 68 100 48 T200 48 T300 48 T400 48" stroke="#3E5C76" strokeWidth="1.5" opacity=".2" />
-              <path d="M0 32 Q50 52 100 32 T200 32 T300 32 T400 32" stroke="#146B4B" strokeWidth="1.5" opacity=".18" />
+              <path d="M0 40 Q50 10 100 40 T200 40 T300 40 T400 40" stroke="#146B4B" strokeWidth="2" opacity=".3" />
+              <path d="M0 48 Q50 68 100 48 T200 48 T300 48 T400 48" stroke="#2DD4A8" strokeWidth="1.5" opacity=".25" />
+              <path d="M0 32 Q50 52 100 32 T200 32 T300 32 T400 32" stroke="#0F766E" strokeWidth="1.5" opacity=".2" />
             </svg>
           </div>
 
-          <div className="relative z-10 flex items-center gap-3 bg-ink text-white rounded-t-xl px-3.5 py-2.5">
+          <div className="relative z-10 flex items-center gap-3 text-white rounded-t-xl px-3.5 py-2.5"
+            style={{ background: RIO_BRAND.ink }}>
             <span className="w-2 h-2 rounded-full bg-[#e85d5d] animate-pulse-rec flex-none" aria-hidden />
             <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-400">Recording</span>
             <Waveform />
-            <span className="font-mono text-[11px] text-accent-soft">2:14</span>
+            <span className="font-mono text-[11px]" style={{ color: RIO_BRAND.greenLight }}>2:14</span>
           </div>
 
           <div className="relative z-10 border border-line border-t-0 rounded-b-2xl p-3.5 shadow-[0_24px_60px_rgba(29,27,24,.08)]"
@@ -163,7 +180,7 @@ export default function LandingPage() {
         <div className="max-w-[1120px] mx-auto">
           <div className="text-[11px] uppercase tracking-widest text-muted font-semibold mb-2.5">Why RIO</div>
           <h2 className="font-serif text-[clamp(28px,4vw,36px)] tracking-tight max-w-[640px] leading-tight">
-            Conversation intelligence managers can actually use.
+            Conversation intelligence you can actually use.
           </h2>
           <p className="mt-3.5 text-base text-stone-600 max-w-[560px]">
             Not sentiment dashboards. Structured evidence, deterministic scores,
@@ -181,12 +198,41 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Demand signals — word cloud teaser (live view on /customers) */}
+      <section className="py-[72px] px-6 bg-white border-y border-line" id="demand">
+        <div className="max-w-[1120px] mx-auto grid lg:grid-cols-[1fr_1.1fr] gap-10 items-center">
+          <div>
+            <div className="text-[11px] uppercase tracking-widest text-muted font-semibold mb-2.5">Voice of the floor</div>
+            <h2 className="font-serif text-[clamp(28px,4vw,36px)] tracking-tight leading-tight">
+              What customers are talking about.
+            </h2>
+            <p className="mt-3.5 text-base text-stone-600 max-w-[480px] leading-relaxed">
+              The demand agent surfaces recurring asks and unfulfilled requests from real visits —
+              sized by how often shoppers raised them, not generic sentiment tags.
+            </p>
+            <Link
+              href="/customers"
+              className="inline-flex mt-5 text-[13px] font-semibold text-good hover:underline underline-offset-2"
+            >
+              Explore live demand on Customers →
+            </Link>
+          </div>
+          <div className="bg-paper border border-line rounded-[14px] px-2 sm:px-4 shadow-[0_12px_40px_rgba(29,27,24,.06)] overflow-visible">
+            <div className="px-2 pt-3 pb-1 flex justify-between items-center text-[11px] text-muted">
+              <span>Sample store window · customer-raised mentions</span>
+              <span className="font-mono text-[10px] bg-good-soft text-good px-2 py-0.5 rounded-full">demo</span>
+            </div>
+            <WordFrequencyCloud items={DEMO_DEMAND_WORDS} maxWords={16} />
+          </div>
+        </div>
+      </section>
+
       {/* Evidence compare */}
       <section className="py-[72px] px-6" id="evidence">
         <div className="max-w-[1120px] mx-auto">
           <div className="text-[11px] uppercase tracking-widest text-muted font-semibold mb-2.5">The difference</div>
           <h2 className="font-serif text-[clamp(28px,4vw,36px)] tracking-tight max-w-[640px] leading-tight">
-            A score you can defend in a one-on-one.
+            A score backed by evidence.
           </h2>
           <div className="grid md:grid-cols-2 gap-4 mt-10">
             <div className="bg-stone-50 border border-line rounded-[14px] p-6">
@@ -197,8 +243,8 @@ export default function LandingPage() {
                 ))}
               </ul>
             </div>
-            <div className="bg-white border-2 border-ink rounded-[14px] p-6">
-              <h4 className="text-[11px] uppercase tracking-wider text-accent mb-3">Retail Intelligence OS</h4>
+            <div className="bg-white border-2 border-good rounded-[14px] p-6">
+              <h4 className="text-[11px] uppercase tracking-wider text-good mb-3">Retail Intelligence OS</h4>
               <ul className="space-y-2 text-[13px]">
                 {['Agents extract yes/no observations + quotes', 'Code computes scores from published weights', 'Coaching tied to exact transcript moments', 'Sale outcome from evidence, not heuristics'].map((t) => (
                   <li key={t} className="flex gap-2"><span className="text-good">✓</span>{t}</li>
@@ -210,14 +256,14 @@ export default function LandingPage() {
       </section>
 
       {/* Pipeline */}
-      <section className="py-[72px] px-6 bg-[#FFF5F0]" id="how">
+      <section className="py-[72px] px-6 bg-good-soft" id="how">
         <div className="max-w-[1120px] mx-auto">
           <div className="text-[11px] uppercase tracking-widest text-muted font-semibold mb-2.5">How it works</div>
-          <h2 className="font-serif text-[clamp(28px,4vw,36px)] tracking-tight">From mic to manager brief in minutes.</h2>
+          <h2 className="font-serif text-[clamp(28px,4vw,36px)] tracking-tight">From mic to insight in minutes.</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10">
             {STEPS.map((s) => (
               <div key={s.n} className="bg-white border border-[#f0ddd4] rounded-[14px] p-5">
-                <div className="text-[11px] font-bold text-accent">{s.n}</div>
+                <div className="text-[11px] font-bold text-good">{s.n}</div>
                 <h4 className="font-semibold text-[15px] mt-1">{s.t}</h4>
                 <p className="text-[13px] text-muted mt-2 leading-snug">{s.d}</p>
               </div>
@@ -232,18 +278,30 @@ export default function LandingPage() {
           <div className="text-[11px] uppercase tracking-widest text-muted font-semibold mb-2.5">Architecture</div>
           <h2 className="font-serif text-[clamp(28px,4vw,36px)] tracking-tight">Two products, one system.</h2>
           <p className="mt-3.5 text-base text-stone-600 max-w-[560px]">
-            Big Ears is the agentic engine. RIO is the OS your managers open every morning.
+            Big Ears is the agentic engine. RIO is the OS your team opens every morning.
           </p>
-          <div className="grid md:grid-cols-2 gap-4 mt-8">
-            <div className="border border-line rounded-[14px] p-[22px]">
-              <div className="w-9 h-9 rounded-[9px] bg-stone-100 grid place-items-center mb-3.5">🎧</div>
-              <h3 className="text-[15px] font-semibold mb-2">Big Ears</h3>
-              <p className="text-[13px] text-muted leading-snug">Backend engine — transcript in, structured judgement out. Agents, scoring, persistence, REST API.</p>
+          <div className="grid lg:grid-cols-[1.35fr_1fr] gap-4 mt-8">
+            <div className="border border-line rounded-[14px] p-[22px] bg-paper/50 flex flex-col">
+              <div className="flex items-center gap-3 mb-1">
+                <div className="w-9 h-9 rounded-[9px] bg-good-soft border border-good/20 grid place-items-center text-lg">🎧</div>
+                <div>
+                  <h3 className="text-[15px] font-semibold">Big Ears</h3>
+                  <p className="text-[11px] text-muted">Backend engine · transcript in, structured judgement out</p>
+                </div>
+              </div>
+              <p className="text-[13px] text-muted leading-snug mt-3">
+                Twelve specialist agents run in layers — clean the transcript, label speakers,
+                then fan out in parallel before deterministic scoring and a final synthesis.
+              </p>
+              <BigEarsPipeline />
             </div>
-            <div className="border-2 border-ink rounded-[14px] p-[22px]">
-              <div className="w-9 h-9 rounded-[9px] bg-accent-soft grid place-items-center text-sm font-bold mb-3.5">R</div>
-              <h3 className="text-[15px] font-semibold mb-2">RIO</h3>
-              <p className="text-[13px] text-muted leading-snug">Frontend OS — dashboards, visit explorer, capture, copilot. Talks to Big Ears only; no database of its own.</p>
+            <div className="border-2 border-good rounded-[14px] p-[22px] bg-good-soft/25 flex flex-col lg:min-h-full">
+              <RioSurfaceHeader />
+              <p className="text-[13px] text-muted leading-snug mt-3">
+                Dashboards, visit explorer, capture, and copilot — thin client over Big Ears,
+                built for the people who run the floor.
+              </p>
+              <RioSurface />
             </div>
           </div>
         </div>
@@ -265,9 +323,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <footer className="max-w-[1120px] mx-auto px-6 py-10 text-[12.5px] text-muted flex flex-wrap gap-4 justify-between">
+      <footer className="max-w-[1120px] mx-auto px-6 py-10 text-[12.5px] text-muted">
         <span>Retail Intelligence OS · Part of the Retail Intelligence System</span>
-        <span>White-label ready · Evidence-first · DPDP by design</span>
       </footer>
     </div>
   );

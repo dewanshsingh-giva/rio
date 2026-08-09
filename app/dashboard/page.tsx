@@ -1,11 +1,10 @@
 import Link from 'next/link';
-import { getOverview, getHomeTrend, getStores, getDemandKeywords, isBackendUp } from '@/lib/api';
+import { getOverview, getHomeTrend, getStores, isBackendUp } from '@/lib/api';
 import type { Range } from '@/lib/api';
 import { Card, Kpi, NoData, inrShort } from '@/components/ui';
 import PageHeader from '@/components/page-header';
 import Filters from '@/components/filters';
 import HomeTrends from '@/components/home-trends';
-import WordFrequencyCloud from '@/components/word-frequency-cloud';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,11 +32,10 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
   // The store/range window is resolved by Big Ears now — RIO forwards the
   // filter rather than computing dates and shipping them back.
   const filter = { store: sp.store, range: (sp.range as Range | undefined) ?? '7d' };
-  const [stores, o, trend, keywords] = await Promise.all([
+  const [stores, o, trend] = await Promise.all([
     getStores(),
     getOverview(filter),
     getHomeTrend(filter),
-    getDemandKeywords(filter),
   ]);
 
   if (!o.totalVisits && !(await isBackendUp())) return <BackendDown />;
@@ -83,23 +81,6 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
         className="mb-3.5"
       >
         <HomeTrends trend={trend} />
-      </Card>
-
-      <Card
-        title="What customers are talking about"
-        note="customer-raised mentions from the demand agent · hover words for counts"
-        className="mb-3.5"
-      >
-        <WordFrequencyCloud
-          items={keywords
-            .filter((k) => k.by_customer > 0)
-            .slice(0, 24)
-            .map((k) => ({
-              term: k.term,
-              count: k.by_customer,
-            }))}
-          empty="No customer mentions in this window."
-        />
       </Card>
     </>
   );

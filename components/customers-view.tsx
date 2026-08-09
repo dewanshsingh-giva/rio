@@ -171,7 +171,7 @@ export default function CustomersView({
           </div>
         </Card>
 
-        <Card title="What customers are talking about" note="customer-raised mentions · hover for counts">
+        <Card title="What customers are talking about" note="customer-raised mentions · count on each capsule">
           <WordFrequencyCloud items={wordItems} empty="No demand mentions in this window — run visits through the demand agent." />
         </Card>
       </div>
