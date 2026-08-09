@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Deploy RIO to Vercel, pointing at Big Ears via ngrok.
+# Deploy RIO to Vercel, pointing at Big Ears via a tunnel (cloudflared / ngrok).
 #
 # Usage:
-#   export BIG_EARS_NGROK_URL=https://xxxx.ngrok-free.app   # no trailing slash
+#   export BIG_EARS_NGROK_URL=https://xxxx.trycloudflare.com   # no trailing slash
 #   export BIG_EARS_API_KEY=dev-local-key                   # must match big-ears API_KEY
 #   ./scripts/deploy-vercel.sh
 #
@@ -14,15 +14,15 @@ NGROK_URL="${BIG_EARS_NGROK_URL:-}"
 API_KEY="${BIG_EARS_API_KEY:-dev-local-key}"
 
 if [[ -z "$NGROK_URL" ]]; then
-  echo "Set BIG_EARS_NGROK_URL to your ngrok https URL (from big-ears/scripts/ngrok-tunnel.sh)"
+  echo "Set BIG_EARS_NGROK_URL to your tunnel https URL (cloudflared: trycloudflare.com)"
   exit 1
 fi
 
 NGROK_URL="${NGROK_URL%/}"
 
-echo "Testing Big Ears via ngrok…"
+echo "Testing Big Ears via tunnel…"
 if ! curl -sf -H "ngrok-skip-browser-warning: 1" -H "x-api-key: $API_KEY" "$NGROK_URL/ready" >/dev/null; then
-  echo "Cannot reach $NGROK_URL/ready — is ngrok running and Big Ears up?"
+  echo "Cannot reach $NGROK_URL/ready — is the tunnel running and Big Ears up?"
   exit 1
 fi
 
@@ -56,5 +56,5 @@ echo "Deploying to Vercel…"
 $VERCEL --prod
 
 echo ""
-echo "Done. Keep Big Ears + ngrok running while the demo is live."
-echo "If ngrok URL changes, re-run this script with the new BIG_EARS_NGROK_URL."
+echo "Done. Keep Big Ears + tunnel running while the demo is live."
+echo "If tunnel URL changes, re-run this script with the new BIG_EARS_NGROK_URL."
