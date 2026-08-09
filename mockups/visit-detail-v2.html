@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visit detail — layout proposal v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1D1B18;
+      --muted: #767268;
+      --line: #E7E3D9;
+      --paper: #F9F8F5;
+      --white: #fff;
+      --accent: #B4780C;
+      --accent-soft: #FBF0DC;
+      --good: #146B4B;
+      --good-soft: #E7F3EC;
+      --warn: #B4780C;
+      --warn-soft: #FBF0DC;
+      --bad: #A82142;
+      --bad-soft: #F8E4E8;
+      --info: #3E5C76;
+      --info-soft: #E9EEF2;
+      --sidebar: 360px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'IBM Plex Sans', system-ui, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .shell { display: flex; min-height: 100vh; }
+    .nav-rail {
+      width: 220px; background: var(--ink); color: #c9c4b8; padding: 20px 16px; flex-shrink: 0;
+      font-size: 12px;
+    }
+    .nav-rail .logo { font-weight: 700; color: #fff; margin-bottom: 24px; }
+    .nav-rail a { display: block; padding: 6px 8px; color: inherit; text-decoration: none; border-radius: 6px; }
+    .nav-rail a.active { background: rgba(255,255,255,.08); color: #fff; }
+
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+    /* ── Sticky visit header ── */
+    .visit-header {
+      position: sticky; top: 0; z-index: 20;
+      background: rgba(249,248,245,.92); backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line);
+      padding: 12px 24px;
+    }
+    .back { font-family: Fraunces, serif; font-size: 15px; font-weight: 600; color: var(--info); text-decoration: none; }
+    .header-grid {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 20px;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .visit-title { font-family: Fraunces, serif; font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+    .visit-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .score-ring {
+      width: 72px; height: 72px; border-radius: 50%;
+      border: 6px solid var(--good);
+      display: grid; place-items: center;
+      font-family: Fraunces, serif; font-size: 22px; font-weight: 700; color: var(--good);
+      background: var(--white);
+    }
+    .outcome-pill {
+      text-align: right;
+    }
+    .outcome-pill .badge {
+      display: inline-block; background: var(--good-soft); color: var(--good);
+      font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 999px;
+    }
+    .outcome-pill .value { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* ── Compact score strip ── */
+    .score-strip {
+      display: flex; gap: 12px; padding: 12px 24px; border-bottom: 1px solid var(--line);
+      background: var(--white);
+      overflow-x: auto;
+    }
+    .score-chip {
+      flex: 1; min-width: 140px; padding: 10px 14px; border: 1px solid var(--line);
+      border-radius: 10px; background: var(--paper);
+    }
+    .score-chip .label {
+      font-size: 10px; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--muted); font-weight: 600;
+    }
+    .score-chip .num {
+      font-family: Fraunces, serif; font-size: 20px; font-weight: 700; margin: 2px 0 6px;
+    }
+    .bar { height: 4px; background: #EDEAE1; border-radius: 99px; overflow: hidden; }
+    .bar > span { display: block; height: 100%; border-radius: 99px; }
+    .score-chip.hosp .num, .score-chip.hosp .bar > span { color: var(--good); background: var(--good); }
+    .score-chip.sales .num, .score-chip.sales .bar > span { color: var(--good); background: var(--good); }
+    .score-chip.acc .num { color: var(--warn); }
+    .score-chip.acc .bar > span { background: var(--warn); width: 65%; }
+
+    /* ── Section tabs ── */
+    .tabs {
+      display: flex; gap: 4px; padding: 8px 24px 0;
+      border-bottom: 1px solid var(--line); background: var(--white);
+    }
+    .tab {
+      padding: 10px 16px; font-size: 13px; font-weight: 500; color: var(--muted);
+      border: none; background: none; cursor: pointer;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+    }
+    .tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+    /* ── Body: transcript + sticky sidebar ── */
+    .body {
+      display: grid;
+      grid-template-columns: 1fr var(--sidebar);
+      gap: 0;
+      flex: 1;
+      align-items: start;
+    }
+    .transcript-pane {
+      padding: 20px 24px 40px;
+      border-right: 1px solid var(--line);
+      min-height: calc(100vh - 200px);
+    }
+
+    /* Key moments jump bar */
+    .moments {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px;
+    }
+    .moment {
+      font-size: 11px; padding: 4px 10px; border-radius: 999px;
+      border: 1px solid var(--line); background: var(--white);
+      color: var(--info); cursor: pointer;
+    }
+    .moment.bad { border-color: #f0c4cc; background: var(--bad-soft); color: var(--bad); }
+
+    /* Filter chips */
+    .filters {
+      display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap;
+    }
+    .filter {
+      font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 999px;
+      border: 1px solid var(--line); background: var(--white); color: var(--muted); cursor: pointer;
+    }
+    .filter.on { background: var(--ink); color: var(--white); border-color: var(--ink); }
+
+    /* Transcript — conversation thread, not table */
+    .thread { background: var(--white); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .turn {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid #f3f0e8;
+      position: relative;
+    }
+    .turn:last-child { border-bottom: none; }
+    .turn.highlight { background: var(--accent-soft); }
+    .turn .time { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); padding-top: 2px; }
+    .turn .bubble { }
+    .turn .who {
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+      margin-bottom: 4px;
+    }
+    .turn.staff .who { color: var(--info); }
+    .turn.customer .who { color: var(--accent); }
+    .turn .text { font-size: 13px; line-height: 1.55; }
+    .turn .flags { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px; }
+    .flag {
+      font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 999px;
+    }
+    .flag.good { background: var(--good-soft); color: var(--good); }
+    .flag.bad { background: var(--bad-soft); color: var(--bad); }
+    .turn .turn-bar {
+      position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    }
+    .turn.staff .turn-bar { background: var(--info); opacity: .35; }
+    .turn.customer .turn-bar { background: var(--accent); opacity: .35; }
+
+    /* Sticky right rail — manager actions */
+    .sidebar {
+      position: sticky; top: 120px;
+      padding: 20px 20px 40px;
+      max-height: calc(100vh - 130px);
+      overflow-y: auto;
+    }
+    .panel {
+      background: var(--white); border: 1px solid var(--line);
+      border-radius: 12px; padding: 16px; margin-bottom: 14px;
+    }
+    .panel h3 {
+      font-size: 11px; text-transform: uppercase; letter-spacing: .08em;
+      color: var(--muted); font-weight: 600; margin-bottom: 10px;
+    }
+    .panel .summary { font-size: 13.5px; line-height: 1.6; color: var(--ink); }
+    .signal-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px;
+    }
+    .signal-grid dt { color: var(--muted); font-size: 10px; text-transform: uppercase; }
+    .signal-grid dd { font-weight: 500; margin: 0 0 8px; }
+
+    .coach-item {
+      padding: 12px 0; border-bottom: 1px solid var(--line);
+    }
+    .coach-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .prio {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      color: var(--bad); margin-bottom: 4px;
+    }
+    .coach-cat { font-weight: 600; font-size: 13px; }
+    .coach-obs { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .say-instead {
+      margin-top: 8px; padding: 10px 12px; background: var(--good-soft);
+      border-left: 3px solid var(--good); border-radius: 0 8px 8px 0;
+      font-size: 12.5px; line-height: 1.5;
+    }
+    .say-instead b { display: block; font-size: 10px; text-transform: uppercase; color: var(--good); margin-bottom: 4px; }
+
+    /* Evidence — collapsed by default, accordion */
+    .evidence-section {
+      padding: 0 24px 48px;
+      background: var(--white);
+      border-top: 1px solid var(--line);
+    }
+    .evidence-section h2 {
+      font-family: Fraunces, serif; font-size: 18px; padding: 20px 0 12px;
+    }
+    .accordion { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .acc-item { border-bottom: 1px solid var(--line); }
+    .acc-item:last-child { border-bottom: none; }
+    .acc-head {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 16px; cursor: pointer; background: var(--paper);
+      font-weight: 600; font-size: 13px;
+    }
+    .acc-head .meta { font-weight: 400; font-size: 11px; color: var(--muted); }
+    .acc-head .score-mini { font-family: Fraunces, serif; font-size: 18px; color: var(--good); }
+    .acc-body { padding: 0 16px 14px; display: none; }
+    .acc-item.open .acc-body { display: block; }
+    .obs-row {
+      display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f3f0e8;
+      font-size: 12.5px;
+    }
+    .obs-row:last-child { border-bottom: none; }
+    .obs-icon { width: 18px; flex-shrink: 0; }
+    .obs-quote { font-style: italic; color: var(--muted); font-size: 12px; margin-top: 3px; }
+
+    .proposal-banner {
+      background: linear-gradient(90deg, #1D1B18, #3E5C76);
+      color: #fff; padding: 10px 24px; font-size: 12px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .proposal-banner strong { color: #FBF0DC; }
+  </style>
+</head>
+<body>
+  <div class="proposal-banner">
+    <span><strong>Layout proposal v2</strong> — not wired up. Open this file in a browser to review.</span>
+    <span>Visit: v-akash-kumar-20260808-wedding-silver</span>
+  </div>
+
+  <div class="shell">
+    <aside class="nav-rail">
+      <div class="logo">RIO</div>
+      <a href="#">Home</a>
+      <a href="#" class="active">Conversations</a>
+      <a href="#">Coaching</a>
+      <a href="#">Ingest</a>
+    </aside>
+
+    <div class="main">
+      <!-- STICKY HEADER: identity + verdict at a glance -->
+      <header class="visit-header">
+        <a class="back" href="#">← Conversations</a>
+        <div class="header-grid">
+          <div>
+            <div class="visit-title">Akash Kumar · Wedding silver set</div>
+            <div class="visit-meta">Indiranagar, Bangalore · 08 Aug 2026, 11:42 AM · 14m 20s · 47 utterances</div>
+          </div>
+          <div class="score-ring" title="Overall score">88</div>
+          <div class="outcome-pill">
+            <span class="badge">Purchased · ₹81,200</span>
+            <div class="value">Role ID 91% · No review flag</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- COMPACT SCORES: scannable in one glance, not 3 hero cards -->
+      <div class="score-strip">
+        <div class="score-chip hosp">
+          <div class="label">Hospitality</div>
+          <div class="num">100</div>
+          <div class="bar"><span style="width:100%"></span></div>
+        </div>
+        <div class="score-chip sales">
+          <div class="label">Sales effectiveness</div>
+          <div class="num">100</div>
+          <div class="bar"><span style="width:100%"></span></div>
+        </div>
+        <div class="score-chip acc">
+          <div class="label">Accuracy & compliance</div>
+          <div class="num">65</div>
+          <div class="bar"><span></span></div>
+        </div>
+      </div>
+
+      <!-- TABS: reduce scroll fatigue — manager vs auditor modes -->
+      <nav class="tabs">
+        <button class="tab active">Overview</button>
+        <button class="tab">Transcript</button>
+        <button class="tab">Evidence</button>
+        <button class="tab">Removed (2)</button>
+      </nav>
+
+      <div class="body">
+        <!-- PRIMARY: transcript as the artifact -->
+        <section class="transcript-pane">
+          <div class="moments">
+            <span class="moment">0:01 Greeting</span>
+            <span class="moment">2:14 Need discovery</span>
+            <span class="moment bad">8:32 EMI not mentioned</span>
+            <span class="moment">11:05 Wedding occasion</span>
+            <span class="moment">13:40 Close</span>
+          </div>
+
+          <div class="filters">
+            <button class="filter on">All</button>
+            <button class="filter">Misses only</button>
+            <button class="filter">Hospitality</button>
+            <button class="filter">Sales</button>
+            <button class="filter">Accuracy</button>
+          </div>
+
+          <div class="thread">
+            <div class="turn staff">
+              <div class="turn-bar"></div>
+              <div class="time">0:01</div>
+              <div class="bubble">
+                <div class="who">Staff · Akash</div>
+                <div class="text">Namaste, welcome to GIVA. Main Akash hoon, aaj main aapki help karunga.</div>
+                <div class="flags"><span class="flag good">Greeted within 30s</span></div>
+              </div>
+            </div>
+            <div class="turn customer">
+              <div class="turn-bar"></div>
+              <div class="time">0:09</div>
+              <div class="bubble">
+                <div class="who">Customer</div>
+                <div class="text">Haan, mujhe wedding ke liye silver set dekhna hai. Sister ki shaadi next month.</div>
+              </div>
+            </div>
+            <div class="turn staff">
+              <div class="turn-bar"></div>
+              <div class="time">0:22</div>
+              <div class="bubble">
+                <div class="who">Staff · Akash</div>
+                <div class="text">Bahut badhiya. Pehle aap baithiye, pani lenge? Budget roughly kya range mein soch rahe hain?</div>
+                <div class="flags">
+                  <span class="flag good">Seating offered</span>
+                  <span class="flag good">Water offered</span>
+                  <span class="flag good">Budget asked early</span>
+                </div>
+              </div>
+            </div>
+            <div class="turn staff highlight">
+              <div class="turn-bar"></div>
+              <div class="time">8:32</div>
+              <div class="bubble">
+                <div class="who">Staff · Akash</div>
+                <div class="text">Yeh set aapko ₹81,200 mein mil jayega. Aaj store pe 10% wedding offer bhi chal raha hai.</div>
+                <div class="flags"><span class="flag bad">EMI / finance not mentioned</span></div>
+              </div>
+            </div>
+            <div class="turn customer">
+              <div class="turn-bar"></div>
+              <div class="time">13:40</div>
+              <div class="bubble">
+                <div class="who">Customer</div>
+                <div class="text">Theek hai, pack kar dijiye. Bill pe number likh dena.</div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:11px;color:var(--muted);margin-top:12px;">↑ Transcript is the hero. Pills only on flagged lines (or when a filter is active).</p>
+        </section>
+
+        <!-- STICKY SIDEBAR: what the manager should do next -->
+        <aside class="sidebar">
+          <div class="panel">
+            <h3>What happened</h3>
+            <p class="summary">High-intent wedding purchase closed at ₹81.2k after strong discovery and storytelling. Associate missed mentioning EMI/finance options at price reveal — the main coaching gap. Customer left satisfied with billing contact captured.</p>
+          </div>
+
+          <div class="panel">
+            <h3>Customer signal</h3>
+            <dl class="signal-grid">
+              <dt>Intent</dt><dd>High</dd>
+              <dt>Occasion</dt><dd>Wedding</dd>
+              <dt>Budget</dt><dd>₹70k–85k</dd>
+              <dt>Blocker</dt><dd>None (closed)</dd>
+            </dl>
+          </div>
+
+          <div class="panel">
+            <h3>Coaching · 2 items</h3>
+            <div class="coach-item">
+              <div class="prio">High priority</div>
+              <div class="coach-cat">Offer communication</div>
+              <div class="coach-obs">At ₹81,200 reveal, wedding 10% and EMI options were not mentioned together.</div>
+              <div class="say-instead">
+                <b>Say instead</b>
+                "Sir yeh set ₹81,200 ka hai, aur aaj wedding offer ke saath EMI bhi available hai — chahein toh ₹6,800 per month se start ho sakta hai."
+              </div>
+            </div>
+            <div class="coach-item">
+              <div class="prio" style="color:var(--warn)">Medium</div>
+              <div class="coach-cat">Closing</div>
+              <div class="coach-obs">Could confirm delivery timeline for wedding date explicitly.</div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Speakers</h3>
+            <div style="font-size:12.5px;line-height:1.7">
+              <div><strong style="color:var(--info)">A → staff</strong> (0.94)</div>
+              <div><strong style="color:var(--accent)">B → customer</strong> (0.89)</div>
+              <div><strong style="color:#7c3aed">C → companion</strong> (0.72)</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- EVIDENCE: accordion below fold — for auditors, not first read -->
+      <section class="evidence-section">
+        <h2>Agent evidence</h2>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">Collapsed by default. Expand only the dimension you want to audit — avoids five equal cards fighting for attention.</p>
+
+        <div class="accordion">
+          <div class="acc-item open">
+            <div class="acc-head">
+              <span>Hospitality <span class="meta">· 7 observations</span></span>
+              <span class="score-mini">100</span>
+            </div>
+            <div class="acc-body">
+              <div class="obs-row"><span class="obs-icon" style="color:var(--good)">✓</span><div><strong>Greeted within 30 seconds</strong> — yes<div class="obs-quote">"Namaste, welcome to GIVA…"</div></div></div>
+              <div class="obs-row"><span class="obs-icon" style="color:var(--good)">✓</span><div><strong>Water or beverage offered</strong> — yes</div></div>
+            </div>
+          </div>
+          <div class="acc-item">
+            <div class="acc-head">
+              <span>Sales effectiveness <span class="meta">· 9 observations</span></span>
+              <span class="score-mini">100</span>
+            </div>
+            <div class="acc-body"></div>
+          </div>
+          <div class="acc-item">
+            <div class="acc-head">
+              <span>Accuracy & compliance <span class="meta">· 6 observations</span></span>
+              <span class="score-mini" style="color:var(--warn)">65</span>
+            </div>
+            <div class="acc-body"></div>
+          </div>
+          <div class="acc-item">
+            <div class="acc-head">
+              <span>Customer signal <span class="meta">· signal agent</span></span>
+              <span class="meta">High intent · wedding</span>
+            </div>
+            <div class="acc-body"></div>
+          </div>
+          <div class="acc-item">
+            <div class="acc-head">
+              <span>Role identification <span class="meta">· 3 speakers</span></span>
+              <span class="meta">91% confidence</span>
+            </div>
+            <div class="acc-body"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.acc-head').forEach((head) => {
+      head.addEventListener('click', () => head.parentElement.classList.toggle('open'));
+    });
+    document.querySelectorAll('.filter').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter').forEach((b) => b.classList.remove('on'));
+        btn.classList.add('on');
+      });
+    });
+  </script>
+</body>
+</html>

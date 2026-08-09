@@ -1,0 +1,37 @@
+{
+  "name": "rio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "RIO — Retail Intelligence OS, the frontend for the Retail Intelligence System.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "gen:api": "openapi-typescript ${BIG_EARS_API_URL:-http://localhost:8080}/openapi.json -o lib/api-types.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1106.0",
+    "@aws-sdk/s3-request-presigner": "^3.1106.0",
+    "@supabase/supabase-js": "^2.109.0",
+    "next": "^15.0.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "server-only": "^0.0.1",
+    "ws": "^8.21.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@types/ws": "^8.18.1",
+    "autoprefixer": "^10.4.20",
+    "openapi-typescript": "^7.4.4",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "typescript": "^5.6.3"
+  }
+}

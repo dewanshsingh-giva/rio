@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Score cards — ring + bottom capsules</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1D1B18;
+      --muted: #767268;
+      --line: #E7E3D9;
+      --paper: #F9F8F5;
+      --white: #fff;
+      --track: #EDEAE1;
+      --good: #146B4B;
+      --good-soft: #E7F3EC;
+      --bad: #A82142;
+      --bad-soft: #F8E4E8;
+      --warn: #B4780C;
+      --warn-soft: #FBF0DC;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'IBM Plex Sans', system-ui, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      padding: 32px 24px;
+    }
+    .note {
+      max-width: 980px;
+      margin: 0 auto 24px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .note strong { color: var(--ink); }
+
+    .score-strip {
+      display: flex;
+      gap: 10px;
+      max-width: 980px;
+      margin: 0 auto;
+      overflow-x: auto;
+    }
+
+    .score-card {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px 12px 11px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--white);
+      text-align: left;
+      cursor: pointer;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .score-card:hover {
+      border-color: #cfc9bb;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+
+    .label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .score-ring {
+      position: relative;
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--white);
+      margin-bottom: 10px;
+    }
+    .score-ring svg {
+      position: absolute;
+      inset: 0;
+    }
+    .score-ring .num {
+      position: relative;
+      font-family: Fraunces, serif;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .obs-capsules {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .obs-cap {
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 1.2;
+      padding: 3px 7px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .obs-cap.good { background: var(--good-soft); color: var(--good); }
+    .obs-cap.bad  { background: var(--bad-soft);  color: var(--bad); }
+    .obs-cap.warn { background: var(--warn-soft); color: var(--warn); }
+  </style>
+</head>
+<body>
+
+  <p class="note">
+    <strong>v3:</strong> Circular ring around the score + observation capsules along the bottom (wraps naturally).
+    Label → ring → chips reads top-to-bottom; chips feel like a footer strip on each card.
+  </p>
+
+  <div class="score-strip">
+
+    <button type="button" class="score-card" aria-label="Hospitality 83">
+      <div class="label">Hospitality</div>
+      <div class="score-ring">
+        <svg width="52" height="52" aria-hidden="true">
+          <circle cx="26" cy="26" r="21" fill="none" stroke="var(--track)" stroke-width="5"/>
+          <circle cx="26" cy="26" r="21" fill="none" stroke="var(--good)" stroke-width="5"
+            stroke-linecap="round" stroke-dasharray="131.95" stroke-dashoffset="22.43"
+            transform="rotate(-90 26 26)"/>
+        </svg>
+        <span class="num" style="color:var(--good)">83</span>
+      </div>
+      <div class="obs-capsules">
+        <span class="obs-cap good">Greeted</span>
+        <span class="obs-cap good">Water offered</span>
+        <span class="obs-cap bad">Seat offered</span>
+        <span class="obs-cap good">Patience</span>
+        <span class="obs-cap good">Thanked</span>
+        <span class="obs-cap bad">Companions ack.</span>
+        <span class="obs-cap good">Invited back</span>
+      </div>
+    </button>
+
+    <button type="button" class="score-card" aria-label="Sales effectiveness 65">
+      <div class="label">Sales effectiveness</div>
+      <div class="score-ring">
+        <svg width="52" height="52" aria-hidden="true">
+          <circle cx="26" cy="26" r="21" fill="none" stroke="var(--track)" stroke-width="5"/>
+          <circle cx="26" cy="26" r="21" fill="none" stroke="var(--good)" stroke-width="5"
+            stroke-linecap="round" stroke-dasharray="131.95" stroke-dashoffset="46.18"
+            transform="rotate(-90 26 26)"/>
+        </svg>
+        <span class="num" style="color:var(--good)">65</span>
+      </div>
+      <div class="obs-capsules">
+        <span class="obs-cap bad">Budget</span>
+        <span class="obs-cap good">Occasion</span>
+        <span class="obs-cap bad">Open questions</span>
+        <span class="obs-cap bad">Product story</span>
+        <span class="obs-cap bad">Objection handled</span>
+        <span class="obs-cap good">Close attempted</span>
+        <span class="obs-cap good">Contact captured</span>
+        <span class="obs-cap bad">Upsell</span>
+        <span class="obs-cap bad">Cross-sell</span>
+      </div>
+    </button>
+
+    <button type="button" class="score-card" aria-label="Accuracy and compliance 73">
+      <div class="label">Accuracy & compliance</div>
+      <div class="score-ring">
+        <svg width="52" height="52" aria-hidden="true">
+          <circle cx="26" cy="26" r="21" fill="none" stroke="var(--track)" stroke-width="5"/>
+          <circle cx="26" cy="26" r="21" fill="none" stroke="var(--warn)" stroke-width="5"
+            stroke-linecap="round" stroke-dasharray="131.95" stroke-dashoffset="35.63"
+            transform="rotate(-90 26 26)"/>
+        </svg>
+        <span class="num" style="color:var(--warn)">73</span>
+      </div>
+      <div class="obs-capsules">
+        <span class="obs-cap good">Buyback policy</span>
+        <span class="obs-cap warn">Making charges</span>
+        <span class="obs-cap good">EMI mentioned</span>
+        <span class="obs-cap good">Live offer</span>
+        <span class="obs-cap bad">Loyalty programme</span>
+        <span class="obs-cap good">No factual errors</span>
+      </div>
+    </button>
+
+  </div>
+
+</body>
+</html>

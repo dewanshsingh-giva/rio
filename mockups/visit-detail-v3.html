@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visit detail — layout v3 preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1D1B18;
+      --muted: #767268;
+      --line: #E7E3D9;
+      --paper: #F9F8F5;
+      --white: #fff;
+      --accent: #B4780C;
+      --accent-soft: #FBF0DC;
+      --good: #146B4B;
+      --good-soft: #E7F3EC;
+      --warn: #B4780C;
+      --warn-soft: #FBF0DC;
+      --bad: #A82142;
+      --bad-soft: #F8E4E8;
+      --info: #3E5C76;
+      --info-soft: #E9EEF2;
+      --rail: 220px;
+      --sidebar: 340px;
+      --header-h: 118px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'IBM Plex Sans', system-ui, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .preview-banner {
+      background: linear-gradient(90deg, #1D1B18, #3E5C76);
+      color: #fff;
+      padding: 8px 20px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .preview-banner strong { color: #FBF0DC; }
+    .preview-banner code { font-family: 'IBM Plex Mono', monospace; font-size: 11px; opacity: .85; }
+
+    .shell { display: flex; min-height: calc(100vh - 34px); }
+    .nav-rail {
+      width: var(--rail);
+      background: var(--ink);
+      color: #c9c4b8;
+      padding: 18px 14px;
+      flex-shrink: 0;
+      font-size: 12px;
+    }
+    .nav-rail .brand {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 22px; padding: 0 4px;
+    }
+    .nav-rail .mark {
+      width: 26px; height: 26px; border-radius: 7px;
+      background: linear-gradient(135deg, #D99A2B, #B4780C);
+      display: grid; place-items: center; font-size: 10px; font-weight: 800; color: #fff;
+    }
+    .nav-rail .brand b { display: block; color: #fff; font-size: 13px; }
+    .nav-rail .brand small { color: #9a958a; font-size: 10px; }
+    .nav-rail .group { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: #6f6a60; padding: 12px 8px 6px; }
+    .nav-rail a {
+      display: block; padding: 7px 10px; color: inherit; text-decoration: none;
+      border-radius: 7px; margin-bottom: 2px;
+    }
+    .nav-rail a.active { background: #57534e; color: #fff; font-weight: 600; }
+
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+    /* ── Slim sticky chrome ── */
+    .top-chrome {
+      position: sticky; top: 0; z-index: 30;
+      background: rgba(249,248,245,.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 1px 0 rgba(0,0,0,.03);
+    }
+    .visit-header { padding: 10px 22px 0; }
+    .back {
+      font-size: 13px; font-weight: 500; color: var(--info);
+      text-decoration: none; display: inline-block; margin-bottom: 8px;
+    }
+    .header-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 16px;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+    .visit-title {
+      font-family: Fraunces, serif;
+      font-size: 21px; font-weight: 700; letter-spacing: -.02em; line-height: 1.2;
+    }
+    .visit-meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .score-ring {
+      width: 64px; height: 64px; border-radius: 50%;
+      border: 5px solid var(--good);
+      display: grid; place-items: center;
+      font-family: Fraunces, serif; font-size: 20px; font-weight: 700; color: var(--good);
+      background: var(--white);
+    }
+    .outcome-block { text-align: right; min-width: 120px; }
+    .outcome-badge {
+      display: inline-block;
+      font-size: 12px; font-weight: 600;
+      padding: 5px 11px; border-radius: 999px;
+      background: #f0eeea; color: var(--muted);
+    }
+    .outcome-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    .review-strip {
+      margin: 0 22px 10px;
+      background: var(--accent-soft);
+      border: 1px solid #e8c98a;
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 12px;
+    }
+    .review-strip b { color: var(--accent); }
+
+    .score-strip {
+      display: flex; gap: 10px;
+      padding: 0 22px 12px;
+      overflow-x: auto;
+    }
+    .score-chip {
+      flex: 1; min-width: 128px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--white);
+      cursor: pointer;
+      text-align: left;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .score-chip:hover { border-color: #cfc9bb; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+    .score-chip .label {
+      font-size: 10px; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--muted); font-weight: 600;
+    }
+    .score-chip .num {
+      font-family: Fraunces, serif; font-size: 18px; font-weight: 700;
+      margin: 1px 0 5px;
+    }
+    .bar { height: 3px; background: #EDEAE1; border-radius: 99px; overflow: hidden; }
+    .bar > span { display: block; height: 100%; border-radius: 99px; }
+
+    /* ── Main: transcript + sidebar (no tabs) ── */
+    .body-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) var(--sidebar);
+      align-items: start;
+      flex: 1;
+    }
+    .transcript-col {
+      border-right: 1px solid var(--line);
+      padding: 18px 22px 32px;
+      min-height: calc(100vh - var(--header-h));
+    }
+    .section-label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: .07em;
+      color: var(--muted); font-weight: 600; margin-bottom: 10px;
+    }
+
+    .moments { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .moment {
+      font-size: 11px; padding: 4px 10px; border-radius: 999px;
+      border: 1px solid var(--line); background: var(--white);
+      color: var(--info); cursor: pointer;
+    }
+    .moment.bad { border-color: #f0c4cc; background: var(--bad-soft); color: var(--bad); }
+
+    .toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; margin-bottom: 12px; flex-wrap: wrap;
+    }
+    .filter-toggle {
+      display: inline-flex; border: 1px solid var(--line); border-radius: 999px;
+      overflow: hidden; background: var(--white);
+    }
+    .filter-toggle button {
+      border: none; background: none; padding: 5px 12px;
+      font-size: 11px; font-weight: 600; color: var(--muted); cursor: pointer;
+    }
+    .filter-toggle button.on { background: var(--ink); color: #fff; }
+    .toolbar-hint { font-size: 11px; color: var(--muted); }
+
+    .thread {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .turn {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 10px;
+      padding: 11px 14px;
+      border-bottom: 1px solid #f3f0e8;
+      position: relative;
+    }
+    .turn:last-child { border-bottom: none; }
+    .turn.miss { background: rgba(248,228,232,.35); }
+    .turn .time {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px; color: var(--muted); padding-top: 2px;
+    }
+    .turn .who {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .05em; margin-bottom: 3px;
+    }
+    .turn.staff .who { color: var(--info); }
+    .turn.customer .who { color: var(--accent); }
+    .turn .text { font-size: 13px; line-height: 1.55; }
+    .turn .flags { margin-top: 7px; display: flex; flex-wrap: wrap; gap: 4px; }
+    .flag {
+      font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 999px;
+    }
+    .flag.bad { background: var(--bad-soft); color: var(--bad); }
+    .turn .bar-l {
+      position: absolute; left: 0; top: 0; bottom: 0; width: 3px; opacity: .4;
+    }
+    .turn.staff .bar-l { background: var(--info); }
+    .turn.customer .bar-l { background: var(--accent); }
+
+    .removed-note {
+      margin-top: 14px; font-size: 11px; color: var(--muted);
+    }
+    .removed-note a { color: var(--info); }
+
+    /* ── Sticky sidebar ── */
+    .sidebar {
+      position: sticky;
+      top: calc(var(--header-h) + 8px);
+      max-height: calc(100vh - var(--header-h) - 16px);
+      overflow-y: auto;
+      padding: 18px 16px 32px;
+    }
+    .panel {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px 15px;
+      margin-bottom: 12px;
+    }
+    .panel h3 {
+      font-size: 10px; text-transform: uppercase; letter-spacing: .08em;
+      color: var(--muted); font-weight: 600; margin-bottom: 8px;
+    }
+    .panel .summary { font-size: 13px; line-height: 1.6; }
+    .headline {
+      font-family: Fraunces, serif;
+      font-size: 15px; font-weight: 600;
+      margin-bottom: 8px; line-height: 1.35;
+    }
+
+    .signal-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      font-size: 12px; padding: 5px 0; border-bottom: 1px solid #f3f0e8;
+    }
+    .signal-row:last-child { border-bottom: none; }
+    .signal-row dt { color: var(--muted); font-size: 10px; text-transform: uppercase; }
+    .signal-row dd { font-weight: 600; margin: 0; text-align: right; }
+
+    .intent-badge {
+      display: inline-block;
+      font-family: Fraunces, serif;
+      font-size: 18px; font-weight: 700;
+      text-transform: capitalize;
+      margin-bottom: 6px;
+    }
+
+    .coach-item { padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .coach-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .prio { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--bad); margin-bottom: 3px; }
+    .coach-cat { font-weight: 600; font-size: 13px; }
+    .coach-obs { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.45; }
+    .say-instead {
+      margin-top: 7px; padding: 9px 11px;
+      background: var(--good-soft);
+      border-left: 3px solid var(--good);
+      border-radius: 0 8px 8px 0;
+      font-size: 12px; line-height: 1.45;
+    }
+    .say-instead b {
+      display: block; font-size: 10px; text-transform: uppercase;
+      color: var(--good); margin-bottom: 3px;
+    }
+
+    .speakers { font-size: 12px; line-height: 1.65; }
+    .speakers div { display: flex; justify-content: space-between; gap: 8px; }
+
+    /* ── Evidence below fold ── */
+    .evidence-section {
+      border-top: 1px solid var(--line);
+      background: var(--white);
+      padding: 20px 22px 48px;
+    }
+    .evidence-head {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 12px; gap: 12px; flex-wrap: wrap;
+    }
+    .evidence-head h2 {
+      font-family: Fraunces, serif; font-size: 17px; font-weight: 700;
+    }
+    .evidence-head p { font-size: 12px; color: var(--muted); max-width: 520px; }
+
+    .accordion { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .acc-item { border-bottom: 1px solid var(--line); }
+    .acc-item:last-child { border-bottom: none; }
+    .acc-head {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 15px; cursor: pointer; background: var(--paper);
+      font-weight: 600; font-size: 13px; user-select: none;
+    }
+    .acc-head:hover { background: #f3f1eb; }
+    .acc-head .meta { font-weight: 400; font-size: 11px; color: var(--muted); margin-left: 6px; }
+    .acc-head .score-mini { font-family: Fraunces, serif; font-size: 17px; }
+    .acc-body { padding: 0 15px 12px; display: none; background: var(--white); }
+    .acc-item.open .acc-body { display: block; }
+    .obs-row {
+      display: flex; gap: 10px; padding: 9px 0;
+      border-bottom: 1px solid #f3f0e8; font-size: 12.5px;
+    }
+    .obs-row:last-child { border-bottom: none; }
+    .obs-icon { width: 18px; flex-shrink: 0; text-align: center; }
+    .obs-quote { font-style: italic; color: var(--muted); font-size: 11.5px; margin-top: 2px; }
+
+    @media (max-width: 980px) {
+      .body-grid { grid-template-columns: 1fr; }
+      .transcript-col { border-right: none; }
+      .sidebar { position: static; max-height: none; }
+      .nav-rail { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-banner">
+    <span><strong>Layout v3 preview</strong> — no tabs · transcript + sticky sidebar · evidence below fold</span>
+    <code>rio/mockups/visit-detail-v3.html</code>
+  </div>
+
+  <div class="shell">
+    <aside class="nav-rail">
+      <div class="brand">
+        <span class="mark">RIO</span>
+        <span><b>Retail Intelligence OS</b><small>Big Ears</small></span>
+      </div>
+      <div class="group">Analyse</div>
+      <a href="#">Home</a>
+      <a href="#" class="active">Conversations</a>
+      <a href="#">Sales</a>
+      <a href="#">Coaching</a>
+    </aside>
+
+    <div class="main">
+      <div class="top-chrome" id="top-chrome">
+        <header class="visit-header">
+          <a class="back" href="#">← Conversations</a>
+          <div class="header-row">
+            <div>
+              <div class="visit-title">Abhishek · gift</div>
+              <div class="visit-meta">HSR · 9 Aug 2026, 12:23 am · 4m 32s</div>
+            </div>
+            <div class="score-ring" style="border-color:#146B4B;color:#146B4B" title="Overall score">72</div>
+            <div class="outcome-block">
+              <span class="outcome-badge">No purchase</span>
+              <div class="outcome-sub">Role ID 95% · Needs review</div>
+            </div>
+          </div>
+        </header>
+
+        <div class="review-strip">
+          <b>Flagged for review</b> — excluded from team averages until confirmed.
+        </div>
+
+        <div class="score-strip">
+          <button type="button" class="score-chip" data-scroll="ev-hosp" style="--c:#146B4B">
+            <div class="label">Hospitality</div>
+            <div class="num" style="color:#146B4B">83</div>
+            <div class="bar"><span style="width:83%;background:#146B4B"></span></div>
+          </button>
+          <button type="button" class="score-chip" data-scroll="ev-sales" style="--c:#146B4B">
+            <div class="label">Sales effectiveness</div>
+            <div class="num" style="color:#146B4B">65</div>
+            <div class="bar"><span style="width:65%;background:#146B4B"></span></div>
+          </button>
+          <button type="button" class="score-chip" data-scroll="ev-acc" style="--c:#B4780C">
+            <div class="label">Accuracy & compliance</div>
+            <div class="num" style="color:#B4780C">73</div>
+            <div class="bar"><span style="width:73%;background:#B4780C"></span></div>
+          </button>
+        </div>
+      </div>
+
+      <div class="body-grid">
+        <!-- LEFT: transcript hero -->
+        <section class="transcript-col">
+          <div class="section-label">Conversation</div>
+
+          <div class="moments">
+            <span class="moment" data-jump="t0">0:01 Greeting</span>
+            <span class="moment" data-jump="t1">0:12 Need discovery</span>
+            <span class="moment" data-jump="t2">1:05 Product display</span>
+            <span class="moment bad" data-jump="t3">1:23 Objection</span>
+            <span class="moment bad" data-jump="t4">3:41 Closing</span>
+            <span class="moment" data-jump="t5">4:30 Exit</span>
+          </div>
+
+          <div class="toolbar">
+            <div class="filter-toggle" id="filter-toggle">
+              <button type="button" class="on" data-mode="all">All lines</button>
+              <button type="button" data-mode="misses">Misses only (3)</button>
+            </div>
+            <span class="toolbar-hint">Flags only on coaching gaps</span>
+          </div>
+
+          <div class="thread" id="thread">
+            <div class="turn staff" id="t0" data-miss="0">
+              <div class="bar-l"></div>
+              <div class="time">0:01</div>
+              <div>
+                <div class="who">Abhishek</div>
+                <div class="text">Hi sir, good evening. Welcome to GIVA. Would you like to get some water?</div>
+              </div>
+            </div>
+            <div class="turn customer" id="t1" data-miss="0">
+              <div class="bar-l"></div>
+              <div class="time">0:06</div>
+              <div>
+                <div class="who">Customer</div>
+                <div class="text">No, thanks. I'm here to buy some jewelries for my friend. If you can take me through that.</div>
+              </div>
+            </div>
+            <div class="turn staff" id="t2" data-miss="0">
+              <div class="bar-l"></div>
+              <div class="time">0:12</div>
+              <div>
+                <div class="who">Abhishek</div>
+                <div class="text">Ok. What kind of jewelry are you looking at? Like, does your friend specially like gold or silver, and what occasion?</div>
+              </div>
+            </div>
+            <div class="turn customer miss" id="t3" data-miss="1">
+              <div class="bar-l"></div>
+              <div class="time">0:22</div>
+              <div>
+                <div class="who">Customer</div>
+                <div class="text">So, I am looking for something in the price range of 2 to 5000…</div>
+                <div class="flags"><span class="flag bad">Budget discovered — staff didn't ask</span></div>
+              </div>
+            </div>
+            <div class="turn customer miss" id="t4" data-miss="1">
+              <div class="bar-l"></div>
+              <div class="time">1:23</div>
+              <div>
+                <div class="who">Customer</div>
+                <div class="text">I like this necklace but I've bought silver before that turned out low quality. How do I know this is good?</div>
+                <div class="flags"><span class="flag bad">Product story not told</span></div>
+              </div>
+            </div>
+            <div class="turn customer miss" id="t5" data-miss="1">
+              <div class="bar-l"></div>
+              <div class="time">3:41</div>
+              <div>
+                <div class="who">Customer</div>
+                <div class="text">I do like the design, but I want to check with my sister before deciding — we usually shop together.</div>
+                <div class="flags"><span class="flag bad">Objection accepted, not handled</span></div>
+              </div>
+            </div>
+            <div class="turn staff" data-miss="0">
+              <div class="bar-l"></div>
+              <div class="time">4:10</div>
+              <div>
+                <div class="who">Abhishek</div>
+                <div class="text">Would it work if we call you day after tomorrow at 6 PM? Can I have your mobile number?</div>
+              </div>
+            </div>
+          </div>
+
+          <p class="removed-note">2 utterances removed before scoring · <a href="#">Show removed</a></p>
+        </section>
+
+        <!-- RIGHT: manager rail (no duplicate tabs) -->
+        <aside class="sidebar">
+          <div class="panel">
+            <h3>Summary</h3>
+            <div class="headline">High-intent gift buyer lost on deferral; follow-up scheduled.</div>
+            <p class="summary">Customer in ₹2–5k range liked a necklace but left to consult her sister. Staff captured contact and booked a callback — warm lead, not a floor sale.</p>
+          </div>
+
+          <div class="panel">
+            <h3>Customer signal</h3>
+            <div class="intent-badge">High intent</div>
+            <dl>
+              <div class="signal-row"><dt>Occasion</dt><dd>Gift</dd></div>
+              <div class="signal-row"><dt>Budget</dt><dd>₹2k – 5k</dd></div>
+              <div class="signal-row"><dt>Blocker</dt><dd>Decision maker absent</dd></div>
+              <div class="signal-row"><dt>Est. value</dt><dd>₹3,500</dd></div>
+              <div class="signal-row"><dt>Next action</dt><dd>Call 10 Aug, 6 PM</dd></div>
+            </dl>
+          </div>
+
+          <div class="panel">
+            <h3>Coaching · 2 high priority</h3>
+            <div class="coach-item">
+              <div class="prio">High</div>
+              <div class="coach-cat">Objection handling</div>
+              <div class="coach-obs">Accepted “need to check with sister” without offering to hold the piece or invite a joint visit.</div>
+              <div class="say-instead">
+                <b>Say instead</b>
+                "Bilkul, main ye necklace 24 hours aapke naam pe hold kar deta hoon — kal sister ke saath aa sakte hain, same piece ready rahega."
+              </div>
+            </div>
+            <div class="coach-item">
+              <div class="prio">High</div>
+              <div class="coach-cat">Discovery</div>
+              <div class="coach-obs">Customer stated budget unprompted; associate never asked directly.</div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Speakers</h3>
+            <div class="speakers">
+              <div><span style="color:var(--info)">A → staff</span><span>0.94</span></div>
+              <div><span style="color:var(--accent)">B → customer</span><span>0.91</span></div>
+              <div><span style="color:#7c3aed">C → staff</span><span>0.78</span></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Evidence: 3 dimensions only — no customer-signal duplicate -->
+      <section class="evidence-section" id="evidence">
+        <div class="evidence-head">
+          <div>
+            <h2>Agent evidence</h2>
+            <p>Scored observations only. Expand a dimension to audit — collapsed by default except the weakest score.</p>
+          </div>
+        </div>
+
+        <div class="accordion">
+          <div class="acc-item" id="ev-hosp">
+            <div class="acc-head">
+              <span>Hospitality<span class="meta">7 obs</span></span>
+              <span class="score-mini" style="color:#146B4B">83</span>
+            </div>
+            <div class="acc-body">
+              <div class="obs-row"><span class="obs-icon" style="color:var(--good)">✓</span><div><strong>Greeted within 30 seconds</strong><div class="obs-quote">"Hi sir, good evening. Welcome to GIVA…"</div></div></div>
+              <div class="obs-row"><span class="obs-icon" style="color:var(--good)">✓</span><div><strong>Water or beverage offered</strong></div></div>
+              <div class="obs-row"><span class="obs-icon" style="color:var(--bad)">✕</span><div><strong>Seat offered</strong> — no</div></div>
+            </div>
+          </div>
+
+          <div class="acc-item open" id="ev-sales">
+            <div class="acc-head">
+              <span>Sales effectiveness<span class="meta">11 obs</span></span>
+              <span class="score-mini" style="color:#146B4B">65</span>
+            </div>
+            <div class="acc-body">
+              <div class="obs-row"><span class="obs-icon" style="color:var(--bad)">✕</span><div><strong>Budget discovered</strong> — customer volunteered; staff never asked</div></div>
+              <div class="obs-row"><span class="obs-icon" style="color:var(--good)">✓</span><div><strong>Occasion discovered</strong></div></div>
+              <div class="obs-row"><span class="obs-icon" style="color:var(--bad)">✕</span><div><strong>Product story told</strong></div></div>
+              <div class="obs-row"><span class="obs-icon" style="color:var(--good)">✓</span><div><strong>Close attempted</strong> — follow-up call scheduled</div></div>
+              <div class="obs-row"><span class="obs-icon" style="color:var(--good)">✓</span><div><strong>Contact captured</strong></div></div>
+              <div class="obs-row"><span class="obs-icon" style="color:var(--muted)">—</span><div><strong>Sale made</strong> — no <span style="color:var(--muted)">(outcome, not scored)</span></div></div>
+            </div>
+          </div>
+
+          <div class="acc-item" id="ev-acc">
+            <div class="acc-head">
+              <span>Accuracy & compliance<span class="meta">6 obs</span></span>
+              <span class="score-mini" style="color:#B4780C">73</span>
+            </div>
+            <div class="acc-body">
+              <div class="obs-row"><span class="obs-icon" style="color:var(--good)">✓</span><div><strong>Buyback / exchange policy stated</strong></div></div>
+              <div class="obs-row"><span class="obs-icon" style="color:var(--warn)">◐</span><div><strong>Making charges disclosed</strong> — unclear</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // Sticky header height for sidebar offset
+    const chrome = document.getElementById('top-chrome');
+    const ro = new ResizeObserver(() => {
+      document.documentElement.style.setProperty('--header-h', chrome.offsetHeight + 'px');
+    });
+    ro.observe(chrome);
+
+    document.querySelectorAll('.acc-head').forEach((head) => {
+      head.addEventListener('click', () => head.parentElement.classList.toggle('open'));
+    });
+
+    document.querySelectorAll('.score-chip[data-scroll]').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        const id = chip.getAttribute('data-scroll');
+        const el = document.getElementById(id);
+        el?.classList.add('open');
+        el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    document.querySelectorAll('.moment[data-jump]').forEach((m) => {
+      m.addEventListener('click', () => {
+        document.getElementById(m.getAttribute('data-jump'))?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    });
+
+    const toggle = document.getElementById('filter-toggle');
+    toggle.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-mode]');
+      if (!btn) return;
+      toggle.querySelectorAll('button').forEach((b) => b.classList.remove('on'));
+      btn.classList.add('on');
+      const misses = btn.dataset.mode === 'misses';
+      document.querySelectorAll('#thread .turn').forEach((row) => {
+        row.style.display = !misses || row.dataset.miss === '1' ? '' : 'none';
+      });
+    });
+  </script>
+</body>
+</html>
