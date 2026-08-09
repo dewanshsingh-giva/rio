@@ -7,6 +7,7 @@ const GROUPS = [
     { href: '/dashboard', icon: '◉', label: 'Home' },
     { href: '/sales', icon: '◑', label: 'Sales' },
     { href: '/visits', icon: '◎', label: 'Conversations' },
+    { href: '/customers', icon: '◍', label: 'Customers' },
     { href: '/demand', icon: '◇', label: 'Demand' },
   ]},
   { label: 'Act', items: [

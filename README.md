@@ -57,6 +57,7 @@ flowchart LR
 | | `/sales` | Sales metrics by associate |
 | | `/visits` | Conversation feed |
 | | `/visits/[id]` | Visit detail — transcript, scores, coaching, evidence |
+| | `/customers` | Customer intent, segments, and word frequency |
 | | `/demand` | Customer demand signals aggregated across visits |
 | **Act** | `/coaching` | Coaching queue from agent output |
 | | `/followups` | Follow-up opportunities |

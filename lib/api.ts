@@ -18,12 +18,14 @@ export type VisitDetail = Schemas['VisitDetail'];
 export type CoachingRow = Schemas['CoachingRow'];
 export type ConversationFeedItem = Schemas['ConversationFeedItem'];
 export type FollowUpRow = Schemas['FollowUpRow'];
+export type CustomerRow = Schemas['CustomerRow'];
 export type ObservationStat = Schemas['ObservationStat'];
 export type Overview = Schemas['Overview'];
 export type HomeTrend = Schemas['HomeTrend'];
 export type SalesMetrics = Schemas['SalesMetrics'];
 export type SalesStaffRow = Schemas['SalesStaffRow'];
 export type ProductDemandRow = Schemas['ProductDemandRow'];
+export type DemandKeywordRow = Schemas['DemandKeywordRow'];
 export type JobAccepted = Schemas['JobAccepted'];
 export type JobPhase = Schemas['JobPhase'];
 export type Job = Schemas['Job'];
@@ -139,6 +141,9 @@ export const getCoaching = () => safe(request<CoachingRow[]>('/coaching'), []);
 
 export const getFollowUps = (store?: string) => safe(request<FollowUpRow[]>('/followups', { query: { store } }), []);
 
+export const getCustomers = (opts: { store?: string; range?: Range; limit?: number } = {}) =>
+  safe(request<CustomerRow[]>('/customers', { query: opts }), []);
+
 /* ── Analytics ───────────────────────────────────────────────────────── */
 
 const EMPTY_OVERVIEW: Overview = {
@@ -176,6 +181,9 @@ export const getSalesStaff = (store?: string) =>
   safe(request<SalesStaffRow[]>('/analytics/sales/staff', { query: { store } }), []);
 
 export const getProductDemand = () => safe(request<ProductDemandRow[]>('/analytics/product-demand'), []);
+
+export const getDemandKeywords = (opts: { store?: string; range?: Range } = {}) =>
+  safe(request<DemandKeywordRow[]>('/analytics/demand-keywords', { query: opts }), []);
 
 /* ── Ingest, jobs, copilot ───────────────────────────────────────────
  * These are called from the `app/api/*` proxies on behalf of client

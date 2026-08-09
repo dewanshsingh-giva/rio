@@ -1064,6 +1064,26 @@ export interface components {
             estimated_value_inr: number | null;
             contact_on_file: boolean;
         };
+        CustomerRow: {
+            visit_id: string;
+            store: string;
+            associate: string | null;
+            visited_at: string;
+            duration_sec: number | null;
+            purchase_intent: string;
+            intent_confidence: number | null;
+            occasion: string;
+            budget_band: string | null;
+            urgency: string;
+            primary_blocker: string;
+            recommended_action: string;
+            estimated_value_inr: number | null;
+            /** @enum {string} */
+            outcome: "converted" | "not_converted" | "callback" | "unknown";
+            sale_made: boolean | null;
+            contact_on_file: boolean;
+            follow_up_open: boolean;
+        };
         ObservationStat: {
             observation_id: string;
             agent_name: string;
@@ -1157,6 +1177,14 @@ export interface components {
             inStock: boolean;
             lostValueInr: number;
             lostVisits: number;
+        };
+        DemandKeywordRow: {
+            term: string;
+            type: string;
+            total: number;
+            by_customer: number;
+            by_staff: number;
+            visits: number;
         };
         JobAccepted: {
             jobId: string;
