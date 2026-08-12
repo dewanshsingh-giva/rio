@@ -1,12 +1,27 @@
-import { getCoaching, getObservationStats, getStaffPerformance } from '@/lib/api';
+import { getCoaching, getObservationStats, getStaffPerformance, getStores } from '@/lib/api';
 import { Card, Pill, Bar, Th, Td, VisitLink, NoData } from '@/components/ui';
 import PageHeader from '@/components/page-header';
+import StoreFilter from '@/components/store-filter';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Coaching() {
-  const [items, stats, staff] = await Promise.all([getCoaching(), getObservationStats(), getStaffPerformance()]);
-  if (!items.length && !stats.length) return <><PageHeader title="Coaching" /><Card><NoData /></Card></>;
+export default async function Coaching({ searchParams }: { searchParams: Promise<{ store?: string }> }) {
+  const sp = await searchParams;
+  const store = sp.store && sp.store !== 'all' ? sp.store : undefined;
+  const [rawItems, rawStats, staff, stores] = await Promise.all([
+    getCoaching(), getObservationStats(), getStaffPerformance(), getStores(),
+  ]);
+
+  // These endpoints can't be filtered by Big Ears (their schema is `query: never`),
+  // so we narrow to the selected store here. `stats` carry a store_id directly;
+  // coaching items only have a staff_id, resolved to a store via staff performance.
+  const staffStore = new Map(staff.map((s) => [s.staff_id, s.store_id]));
+  const items = store ? rawItems.filter((i) => staffStore.get(i.staff_id ?? '') === store) : rawItems;
+  const stats = store ? rawStats.filter((s) => s.store_id === store) : rawStats;
+
+  if (!items.length && !stats.length) {
+    return <><PageHeader title="Coaching" right={<StoreFilter stores={stores} />} /><Card><NoData /></Card></>;
+  }
 
   // `label` and `inverted` come down on the response. The observation
   // catalogue is the single source of truth and it lives in Big Ears — RIO
@@ -33,7 +48,11 @@ export default async function Coaching() {
 
   return (
     <>
-      <PageHeader title="Coaching" sub="What to fix, who to fix it with, and the exact line to use instead" />
+      <PageHeader
+        title="Coaching"
+        sub="What to fix, who to fix it with, and the exact line to use instead"
+        right={<StoreFilter stores={stores} />}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-3.5 mb-3.5">
         <Card title="Most frequent misses" note="across all analysed visits">
