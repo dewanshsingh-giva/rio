@@ -82,7 +82,36 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ s
       >
         <HomeTrends trend={trend} />
       </Card>
+
+      <HealthScoreFooter />
     </>
+  );
+}
+
+/** How the "Store health score" KPI is derived — kept next to the number so
+ *  the methodology travels with the metric rather than living in a doc. */
+function HealthScoreFooter() {
+  return (
+    <footer className="mt-8 pt-5 border-t border-line text-[12px] text-muted">
+      <div className="font-medium text-ink mb-2">How the store health score is calculated</div>
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-2">
+        <span className="px-2 py-1 rounded-md bg-good-soft text-good font-medium">Hospitality</span>
+        <span className="text-muted">+</span>
+        <span className="px-2 py-1 rounded-md bg-accent-soft text-accent font-medium">Sales</span>
+        <span className="text-muted">+</span>
+        <span className="px-2 py-1 rounded-md bg-info-soft text-info font-medium">Accuracy</span>
+        <span className="text-muted">→</span>
+        <span className="px-2 py-1 rounded-md bg-stone-100 text-ink font-semibold">one score, 0–100</span>
+      </div>
+      <p className="mt-2.5 max-w-2xl">
+        Agents extract yes/no observations from each visit (with quotes), then code weighs them —
+        evidence, not sentiment. Averaged across analysed visits; <b>needs-review</b> visits are
+        excluded.{' '}
+        <span className="text-good font-medium">≥75 healthy</span> ·{' '}
+        <span className="text-warn font-medium">55–74 watch</span> ·{' '}
+        <span className="text-bad font-medium">&lt;55 at risk</span>
+      </p>
+    </footer>
   );
 }
 
